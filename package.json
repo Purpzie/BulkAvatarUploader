@@ -1,7 +1,7 @@
 {
   "name": "purpzie.bulkavataruploader",
   "displayName": "Bulk Avatar Uploader",
-  "version": "1.0.0",
+  "version": "1.0.1",
 	"author": {
     "name": "Purpzie"
   },
@@ -13,7 +13,7 @@
   "dependencies": {},
   "gitDependencies": {},
   "vpmDependencies": {
-		"com.vrchat.base": ">=0.1.29 <0.2.0",
+		"com.vrchat.base": ">=3.10.5 <4.0.0",
 		"com.vrchat.avatars": ">=3.10.5 <4.0.0"
 	},
   "legacyFolders": {},
