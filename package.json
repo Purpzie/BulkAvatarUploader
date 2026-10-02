@@ -9,6 +9,7 @@
   "description": "Easily upload multiple avatars",
   "url": "https://github.com/Purpzie/BulkAvatarUploader",
 	"documentationUrl": "https://github.com/Purpzie/BulkAvatarUploader",
+	"changelogUrl": "https://github.com/Purpzie/BulkAvatarUploader/releases",
   "license": "GPL-3.0-only",
   "dependencies": {},
   "gitDependencies": {},
