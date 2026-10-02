@@ -1,0 +1,44 @@
+#container > * {
+    padding: 2px;
+}
+
+#top {
+    height: 30px;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+#top > Label {
+    font-size: 20px;
+}
+
+#top > ProgressBar {
+    width: 100%;
+	margin-top: 5px;
+}
+
+.buttons-container {
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+Button,
+IconButton {
+    flex-shrink: 1;
+    width: 100%;
+	padding: 3px;
+    margin: 1px;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.unity-multi-column-header__column__content-container,
+.unity-multi-column-view__cell {
+    justify-content: center;
+}
+
+.unity-object-field__selector {
+	display: none;
+}

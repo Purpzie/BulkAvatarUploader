@@ -1,0 +1,29 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" custom="Purpzie.BulkAvatarUploader" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Packages/purpzie.bulkavataruploader/Editor/WindowStyle.uss?fileID=7433441132597879392&amp;guid=322186c9423ca2940a25ae7bf97ea143&amp;type=3#WindowStyle" />
+    <ui:VisualElement name="container">
+        <ui:VisualElement name="top">
+            <ui:Label name="title" text="Bulk Avatar Uploader" />
+            <ui:ProgressBar name="progress" high-value="1" title="0%" />
+        </ui:VisualElement>
+        <ui:VisualElement class="buttons-container">
+            <Purpzie.BulkAvatarUploader.IconButton name="settings" text="Settings" icon="d_Settings" />
+            <Purpzie.BulkAvatarUploader.IconButton name="settings-back" text="Back" icon="d_back" />
+            <Purpzie.BulkAvatarUploader.IconButton name="settings-reset" text="Reset" icon="d_Refresh" />
+            <Purpzie.BulkAvatarUploader.IconButton name="refresh" text="Refresh" icon="d_Refresh" />
+            <Purpzie.BulkAvatarUploader.IconButton name="test" text="Test" icon="d_PlayButton" />
+            <Purpzie.BulkAvatarUploader.IconButton name="upload" text="Upload" icon="d_PlayButton" />
+            <Purpzie.BulkAvatarUploader.IconButton name="done" text="Done" icon="d_PreMatQuad" />
+            <Purpzie.BulkAvatarUploader.IconButton name="resume" text="Resume" icon="d_PlayButton" />
+            <Purpzie.BulkAvatarUploader.IconButton name="stop" text="Stop" icon="d_PreMatQuad" />
+            <Purpzie.BulkAvatarUploader.IconButton name="pause" text="Pause" icon="d_PauseButton" />
+        </ui:VisualElement>
+        <ui:VisualElement name="settings-container" />
+        <ui:MultiColumnListView name="avatar-list" show-bound-collection-size="false" show-alternating-row-backgrounds="ContentOnly" selection-type="None" show-border="true">
+            <ui:Columns>
+                <ui:Column name="avatar-toggle" title="Toggle" min-width="20" width="20" max-width="20" resizable="false" />
+                <ui:Column name="avatar" title="Avatar" min-width="150px" width="150px" />
+                <ui:Column name="progress" title="Progress" min-width="200px" width="200px" />
+            </ui:Columns>
+        </ui:MultiColumnListView>
+    </ui:VisualElement>
+</ui:UXML>

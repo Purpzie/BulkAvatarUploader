@@ -1,0 +1,21 @@
+{
+  "name": "purpzie.bulkavataruploader",
+  "displayName": "Bulk Avatar Uploader",
+  "version": "1.0.0",
+	"author": {
+    "name": "Purpzie"
+  },
+  "unity": "2022.3",
+  "description": "Easily upload multiple avatars",
+  "url": "https://github.com/Purpzie/BulkAvatarUploader",
+	"documentationUrl": "https://github.com/Purpzie/BulkAvatarUploader",
+  "license": "GPL-3.0-only",
+  "dependencies": {},
+  "gitDependencies": {},
+  "vpmDependencies": {
+		"com.vrchat.base": ">=0.1.29 <0.2.0",
+		"com.vrchat.avatars": ">=3.10.5 <4.0.0"
+	},
+  "legacyFolders": {},
+  "legacyFiles": {}
+}

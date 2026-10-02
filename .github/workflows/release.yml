@@ -1,0 +1,51 @@
+name: Release
+on:
+  workflow_dispatch:
+env:
+  packageName: purpzie.bulkavataruploader
+  packageReleaseName: Bulk Avatar Uploader
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up environment variables
+        run: |
+          version=$(jq -r .version package.json)
+          echo "version=$version" >> $GITHUB_ENV
+          echo "packagePath=Packages/$packageName" >> $GITHUB_ENV
+          echo "zipFile=$packageName-$version".zip >> $GITHUB_ENV
+          echo "unityPackage=$packageName-$version.unitypackage" >> $GITHUB_ENV
+
+      - name: Move under packages
+        run: |
+          mkdir -p "$packagePath"
+          rsync -a --exclude .git --exclude .github --exclude .gitignore --exclude Packages ./ "$packagePath/"
+
+      - name: Zip
+        working-directory: ${{ env.packagePath }}
+        run: zip -r "$GITHUB_WORKSPACE/$zipFile" .
+
+      - name: Track meta files
+        run: find "$packagePath" -name \*.meta > metaList
+
+      - name: Create package
+        uses: pCYSl5EDgo/create-unitypackage@v1.2.3
+        with:
+          package-path: ${{ env.unityPackage }}
+          include-files: metaList
+
+      - name: Draft release
+        uses: softprops/action-gh-release@v3
+        with:
+          name: v${{ env.version }}
+          draft: true
+          files: |
+            ${{ env.zipFile }}
+            ${{ env.unityPackage }}
+            package.json
+          tag_name: v${{ env.version }}
