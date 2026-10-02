@@ -4,6 +4,11 @@
 
 One of the best ways to improve performance rank is to [split avatars into separate versions](https://docs.unity3d.com/2022.3/Documentation/Manual/PrefabVariants.html), but they're extremely annoying to upload one by one. This script can take care of it for you under `Tools -> Bulk Avatar Uploader`.
 
+<p float="left">
+<img width="49%" src="https://github.com/user-attachments/assets/1caef930-509f-4c77-92fe-be7bdec421fa" />
+<img width="49%" src="https://github.com/user-attachments/assets/4d2db2e8-549f-484c-bf49-c4cdda7f1536" />
+</p>
+
 You can pause, resume, or cancel the process. If an avatar fails, it pauses to show you why. Status colors can be changed in settings.
 
 Inspired by [I5UCC's VRCMultiUploader](https://github.com/I5UCC/VRCMultiUploader) but completely rewritten with a new UI and [multiplatform](https://creators.vrchat.com/avatars/per-platform-avatar-overrides) support.
