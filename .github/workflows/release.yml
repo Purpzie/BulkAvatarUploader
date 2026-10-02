@@ -24,7 +24,7 @@ jobs:
       - name: Move under packages
         run: |
           mkdir -p "$packagePath"
-          rsync -a --exclude .git --exclude .github --exclude .gitignore --exclude Packages ./ "$packagePath/"
+          rsync -a --exclude .git --exclude .github --exclude .gitignore --exclude .gitattributes --exclude .editorconfig --exclude Packages ./ "$packagePath/"
 
       - name: Zip
         working-directory: ${{ env.packagePath }}
