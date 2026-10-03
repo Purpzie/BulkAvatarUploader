@@ -38,7 +38,6 @@ namespace Purpzie.BulkAvatarUploader {
 		public const string KEY_PREFIX = "Purpzie.BulkAvatarUploader";
 		private const string STATE_KEY = KEY_PREFIX + ".State";
 		private const string ACTION_KEY = KEY_PREFIX + ".LastAction";
-		private const string REMAINING_PLATFORMS_KEY = KEY_PREFIX + ".RemainingPlatforms";
 		private const string INITIAL_PLATFORM_KEY = KEY_PREFIX + ".InitialPlatform";
 
 		private static IVRCSdkAvatarBuilderApi? AvatarBuilder;
@@ -63,12 +62,6 @@ namespace Purpzie.BulkAvatarUploader {
 			private set => SessionState.SetInt(ACTION_KEY, (int)value);
 		}
 
-		private static Platforms RemainingPlatforms {
-			get => (Platforms)SessionState.GetInt(REMAINING_PLATFORMS_KEY, (int)Platforms.None)
-				& PlatformsExt.SUPPORTED; // just in case
-			set => SessionState.SetInt(REMAINING_PLATFORMS_KEY, (int)value);
-		}
-
 		private static Platforms InitialPlatform {
 			get => (Platforms)SessionState.GetInt(INITIAL_PLATFORM_KEY, (int)Platforms.None);
 			set => SessionState.SetInt(INITIAL_PLATFORM_KEY, (int)value);
@@ -83,7 +76,7 @@ namespace Purpzie.BulkAvatarUploader {
 			AssemblyReloadEvents.beforeAssemblyReload += DisposeNullAvatars;
 			VRCSdkControlPanel.OnSdkPanelEnable -= OnVRCSdkPanelEnable;
 			VRCSdkControlPanel.OnSdkPanelEnable += OnVRCSdkPanelEnable;
-			if (State == Building && RemainingPlatforms.HasCurrent()) {
+			if (State == Building) {
 				EditorApplication.delayCall += OpenVRCSdkControlPanel;
 				Window.ProgressText = "Waiting for VRC SDK...";
 				OnProgressChanged?.Invoke();
@@ -132,7 +125,7 @@ namespace Purpzie.BulkAvatarUploader {
 		private static async void OnSdkFullyLoaded(object _, object __) {
 			if (HandledSdkFullyLoaded) return;
 			HandledSdkFullyLoaded = true;
-			if (State == Building && RemainingPlatforms.HasCurrent()) await BulkBuild(Action);
+			if (State == Building) await BulkBuild(Action);
 		}
 
 		private static void OnSdkBuildProgress(object _, string status) {
@@ -202,14 +195,11 @@ namespace Purpzie.BulkAvatarUploader {
 			foreach (var avatar in Avatars) avatar.ClearStatus();
 			State = Idle;
 			InitialPlatform = Platforms.None;
-			RemainingPlatforms = Platforms.None;
 		}
 
-		public static bool Startup(BulkAction action) {
+		public static bool Startup(BulkAction action, Platforms platformsToBuild) {
 			OpenVRCSdkControlPanel();
 			RefreshAvatars();
-
-			var platformsToBuild = Avatars.Select(avatar => avatar.remainingPlatforms).ToPlatforms();
 
 			if (platformsToBuild.Count() == 0) {
 				EditorUtility.DisplayDialog(
@@ -263,19 +253,7 @@ namespace Purpzie.BulkAvatarUploader {
 				InitialPlatform = PlatformsExt.CURRENT;
 			}
 
-			RemainingPlatforms = platformsToBuild;
 			State = Building;
-
-			// vrcfury parameter sync
-			if (
-				action == Upload
-				&& !Platforms.Windows.IsCurrent()
-				&& RemainingPlatforms.HasFlag(Platforms.Windows)
-			) {
-				PlatformsExt.Switch(Platforms.Windows);
-				return false;
-			}
-
 			return true;
 		}
 
@@ -285,10 +263,22 @@ namespace Purpzie.BulkAvatarUploader {
 					throw new InvalidEnumArgumentException("action", (int)action, typeof(BulkAction));
 				if (AvatarBuilder == null)
 					throw new NullReferenceException("AvatarBuilder is null. Please wait for the VRC SDK window to open.");
-				if (State != Building && !Startup(action))
-					return;
 
-				RemainingPlatforms &= ~PlatformsExt.CURRENT;
+				var remainingPlatforms = Avatars.Select(a => a.remainingPlatforms).ToPlatforms();
+				if (State != Building && !Startup(action, remainingPlatforms)) return;
+
+				// vrcfury parameter sync
+				if (
+					action == Upload
+					&& !Platforms.Windows.IsCurrent()
+					&& remainingPlatforms.HasFlag(Platforms.Windows)
+				) {
+					Window.ProgressText = "Switching to Windows...";
+					OnProgressChanged?.Invoke();
+					PlatformsExt.Switch(Platforms.Windows);
+					return;
+				}
+
 				Window.ProgressText = null;
 				OnProgressChanged?.Invoke();
 				bool success = true;
@@ -371,7 +361,10 @@ namespace Purpzie.BulkAvatarUploader {
 					return;
 				}
 
-				var nextPlatform = RemainingPlatforms.AsEnumerable().FirstOrDefault();
+				// this may have changed
+				remainingPlatforms = Avatars.Select(a => a.remainingPlatforms).ToPlatforms();
+
+				var nextPlatform = remainingPlatforms.AsEnumerable().FirstOrDefault();
 				if (!nextPlatform.IsEmpty()) {
 					Window.ProgressText = $"Switching to {nextPlatform}...";
 					OnProgressChanged?.Invoke();
