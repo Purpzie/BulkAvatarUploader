@@ -54,6 +54,7 @@ namespace Purpzie.BulkAvatarUploader {
 					&& !EditorUtility.IsPersistent(platOver.avatar) // not a prefab in assets
 					&& platOver.avatar.gameObject.activeInHierarchy
 					&& platOver.avatar.TryGetComponent<PipelineManager>(out var otherManager)
+					&& otherManager.blueprintId == pipelineManager.blueprintId
 				)
 					platformOverrides[platOver.platform.ToPlatform()] = new AvatarSessionState(otherManager);
 		}
