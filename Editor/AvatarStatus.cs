@@ -41,7 +41,13 @@ namespace Purpzie.BulkAvatarUploader {
 			set => session.failedPlatforms = value;
 		}
 
-		public Platforms remainingPlatforms => selectedPlatforms & ~builtPlatforms & ~failedPlatforms;
+		public Platforms remainingPlatforms {
+			get {
+				// vrcfury parameter sync
+				if (failedPlatforms.HasFlag(Platforms.Windows)) return Platforms.None;
+				return selectedPlatforms & ~builtPlatforms & ~failedPlatforms;
+			}
+		}
 
 		public AvatarStatus(PipelineManager pipelineManager) {
 			this.pipelineManager = pipelineManager;

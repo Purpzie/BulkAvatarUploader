@@ -8,8 +8,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Purpzie.BulkAvatarUploader {
-	using static BulkState;
 	using static BulkAction;
+	using static BulkState;
 
 	internal class Window : EditorWindow {
 		private static Window? _Instance;
@@ -167,15 +167,20 @@ namespace Purpzie.BulkAvatarUploader {
 			float totalProgress = 0;
 			int totalAvatarCount = 0;
 			foreach (var avatar in BulkAvatarUploader.Avatars) {
-				totalAvatarCount += avatar.selectedPlatforms.Count();
-				var finishedPlatforms = avatar.builtPlatforms | avatar.failedPlatforms;
-				totalProgress += (finishedPlatforms & ~PlatformsExt.CURRENT).Count()
-					+ (finishedPlatforms.HasCurrent() ? 1 : avatar.progress);
+				int selectedCount = avatar.selectedPlatforms.Count();
+				totalAvatarCount += selectedCount;
+				if (avatar.failedPlatforms.HasFlag(Platforms.Windows))
+					totalProgress += selectedCount;
+				else {
+					var finishedPlatforms = avatar.builtPlatforms | avatar.failedPlatforms;
+					totalProgress += (finishedPlatforms & ~PlatformsExt.CURRENT).Count()
+						+ (finishedPlatforms.HasCurrent() ? 1 : avatar.progress);
+				}
 			}
 
 			progress = totalProgress / totalAvatarCount;
 			progressBar.SetValueAnimated(progress);
-			int percent = (int) Math.Floor(progress * 100);
+			int percent = (int)Math.Floor(progress * 100);
 			if (ProgressText == null)
 				progressBar.title = percent + "%";
 			else
@@ -347,19 +352,28 @@ namespace Purpzie.BulkAvatarUploader {
 
 				platformColumn.bindCell = (element, index) => {
 					if (!platform.Supported()) return;
+
 					var toggle = (element as IndexedPlatformToggle)!;
 					toggle.index = index;
 					var avatar = BulkAvatarUploader.Avatars[index];
 					bool building = BulkAvatarUploader.State == Building;
 					bool overridden = avatar.overriddenPlatforms.HasFlag(platform);
-					toggle.SetValueWithoutNotify(avatar.selectedPlatforms.HasFlag(platform));
-					toggle.SetEnabled(!overridden);
-					if (avatar.failedPlatforms.HasFlag(platform)) {
+
+					// vrcfury parameter sync
+					bool windowsFailed = platform != Platforms.Windows && avatar.failedPlatforms.HasFlag(Platforms.Windows);
+
+					toggle.SetValueWithoutNotify(avatar.remainingPlatforms.HasFlag(platform));
+					toggle.SetEnabled(!overridden && !windowsFailed);
+
+					if (windowsFailed) {
+						toggle.iconColor = Settings.UnselectedColor;
+						toggle.tooltip = $"Can't select {platform} because Windows failed";
+					} else if (avatar.failedPlatforms.HasFlag(platform)) {
 						toggle.iconColor = Settings.FailureColor;
 						toggle.tooltip = $"This avatar had an error on {platform}.";
 					} else if (avatar.builtPlatforms.HasFlag(platform)) {
 						toggle.iconColor = Settings.SuccessColor;
-						toggle.tooltip = $"This avatar was successfully {(BulkAvatarUploader.Action == BulkAction.Upload ? "uploaded" : "built")} on {platform}.";
+						toggle.tooltip = $"This avatar was successfully {(BulkAvatarUploader.Action == Upload ? "uploaded" : "built")} on {platform}.";
 					} else if (building && platform.IsCurrent() && avatar.progressText != null) {
 						toggle.iconColor = Settings.BuildingColor;
 						toggle.tooltip = null;
