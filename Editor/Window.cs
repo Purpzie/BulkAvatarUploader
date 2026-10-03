@@ -6,7 +6,6 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using VRC.SDK3.Editor;
 
 namespace Purpzie.BulkAvatarUploader {
 	using static BulkState;

@@ -111,22 +111,28 @@ namespace Purpzie.BulkAvatarUploader {
 
 			// unfortunately we need to use some of the internal SDK API to fully support multiplatform builds
 			// when 'ContentInfoLoaded' is fired, we can safely start building without being interrupted
-			if (AvatarBuilder is VRCSdkControlPanelAvatarBuilder internalBuilder) {
-				internalBuilder.ContentInfoLoaded -= OnSdkFullyLoaded;
-				internalBuilder.ContentInfoLoaded += OnSdkFullyLoaded;
-			} else {
-				Debug.LogError($"Avatar builder is {AvatarBuilder.GetType().Name}, not VRCSdkControlPanelAvatarBuilder. Multiplatform builds might break.");
+			try {
+				var fullyLoadedEvent = AvatarBuilder.GetType().GetEvent("ContentInfoLoaded");
+				Action<object, object> handler = OnSdkFullyLoaded;
+				var handlerDelegate = Delegate.CreateDelegate(
+					fullyLoadedEvent.EventHandlerType,
+					handler.Target,
+					handler.Method
+				);
+				fullyLoadedEvent.RemoveEventHandler(AvatarBuilder, handlerDelegate);
+				fullyLoadedEvent.AddEventHandler(AvatarBuilder, handlerDelegate);
+			} catch (Exception error) {
+				Debug.LogError($"Failed to listen to ContentInfoLoaded. Multiplatform bulk builds might break.\n{error}");
 				await Task.Delay(5000); // hopefully this is long enough
 				OnSdkFullyLoaded(null!, null!);
 			}
 		}
 
+		private static bool HandledSdkFullyLoaded = false;
 		private static async void OnSdkFullyLoaded(object _, object __) {
-			if (AvatarBuilder is VRCSdkControlPanelAvatarBuilder internalBuilder)
-				internalBuilder.ContentInfoLoaded -= OnSdkFullyLoaded;
-
-			if (State == Building && RemainingPlatforms.HasCurrent())
-				await BulkBuild(Action);
+			if (HandledSdkFullyLoaded) return;
+			HandledSdkFullyLoaded = true;
+			if (State == Building && RemainingPlatforms.HasCurrent()) await BulkBuild(Action);
 		}
 
 		private static void OnSdkBuildProgress(object _, string status) {

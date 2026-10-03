@@ -20,7 +20,11 @@ namespace Purpzie.BulkAvatarUploader {
 		}
 	}
 
-	internal static class ProgressBarExt {
+	internal static class VisualElementExt {
+		public static void SetVisible(this VisualElement element, bool value) {
+			element.style.display = value ? DisplayStyle.Flex : DisplayStyle.None;
+		}
+
 		public static void SetValueAnimated(
 			this ProgressBar progressBar,
 			float newValue,

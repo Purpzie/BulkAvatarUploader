@@ -7,7 +7,9 @@
         "VRC.SDKBase",
         "VRC.SDKBase.Editor"
     ],
-    "includePlatforms": ["Editor"],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
@@ -17,7 +19,8 @@
         "VRCSDKBase-Editor.dll",
         "VRCCore-Editor.dll",
         "VRCSDK3A.dll",
-        "VRCSDK3A-Editor.dll"
+        "VRCSDK3A-Editor.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [],
