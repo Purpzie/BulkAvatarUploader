@@ -7,7 +7,7 @@ One of the best ways to improve performance rank is to [split avatars into separ
 
 <p float="left">
 <img width="49%" src="https://github.com/user-attachments/assets/1caef930-509f-4c77-92fe-be7bdec421fa" />
-<img width="49%" src="https://github.com/user-attachments/assets/4d2db2e8-549f-484c-bf49-c4cdda7f1536" />
+<img width="49%" src="https://github.com/user-attachments/assets/857ab5ce-0175-42e3-8762-066c6ea173ac" />
 </p>
 
 You can pause, resume, or cancel the process. If an avatar fails, it pauses to show you why. Status colors can be changed in settings.
